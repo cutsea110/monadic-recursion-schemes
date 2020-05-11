@@ -3,13 +3,15 @@
 {-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE AllowAmbiguousTypes #-}
 module Data.Functor.Foldable.Monadic
   ( cataM, anaM
   , paraM, apoM
   , histoM, futuM
   , histoM', futuM'
   , zygoM, cozygoM
-  , hyloM
+  , hyloM, metaM
   ) where
 
 import           Control.Comonad              (Comonad (..))
@@ -78,8 +80,8 @@ futuM psi = h
 
 -- | futumorphism on anamorphism variant
 futuM' :: (Monad m, Traversable (Base t), Corecursive t)
-      => (a -> m (Base t (Free (Base t) a))) -- ^ coalgebra
-      -> a -> m t
+       => (a -> m (Base t (Free (Base t) a))) -- ^ coalgebra
+       -> a -> m t
 futuM' psi = anaM f . Pure
   where f (Pure  a) = psi a
         f (Free fb) = return fb
@@ -100,10 +102,18 @@ cozygoM :: (Monad m, Traversable (Base t), Corecursive t)
 cozygoM f psi = anaM g . Right
   where g = either (return . fmap Left <=< f) psi
 
--- | hylomorphism
+-- | hylomorphism on recursive variant
 hyloM :: (Monad m, Traversable t)
       => (t b -> m b)   -- ^ algebra
       -> (a -> m (t a)) -- ^ coalgebra
       -> a -> m b
 hyloM phi psi = h
   where h = phi <=< mapM h <=< psi
+
+-- | metamorphism on recursive variant
+metaM :: (Monad m, Traversable (Base t), Recursive s, Corecursive t, Base s ~ Base t)
+      => (Base t t -> m t)
+      -> (s -> m (Base s s))
+      -> s -> m t
+metaM phi psi = h
+  where h = (return . embed) <=< mapM h . project
