@@ -7,6 +7,7 @@ module Data.Functor.Foldable.Monadic
   ( cataM, anaM
   , paraM, apoM
   , histoM, futuM
+  , histoM', futuM'
   , zygoM, cozygoM
   , hyloM
   ) where
@@ -16,6 +17,7 @@ import           Control.Comonad.Cofree       (Cofree (..))
 import qualified Control.Comonad.Trans.Cofree as Cf (CofreeF (..))
 import           Control.Monad                ((<=<), liftM2)
 import           Control.Monad.Free           (Free (..))
+import qualified Control.Monad.Trans.Free     as Fr (FreeF (..))
 import           Control.Monad.Trans.Class    (lift)
 import           Control.Monad.Trans.Reader   (ReaderT, ask, runReaderT)
 import           Data.Functor.Foldable        (Recursive (..), Corecursive (..), Base, Fix (..))
@@ -62,13 +64,23 @@ histoM' :: (Monad m, Traversable (Base t), Recursive t)
         => (Base t (Cofree (Base t) a) -> m a)
         -> t -> m a
 histoM' phi = return . extract <=< cataM f
-  where f  = return . uncurry (:<) <=< (liftM2 (,) <$> phi <*> return)
+  where f = return . uncurry (:<) <=< (liftM2 (,) <$> phi <*> return)
 
--- | futumorphism on anamorphism variant
+-- | futumorphism on recursion variant
 futuM :: (Monad m, Traversable (Base t), Corecursive t)
       => (a -> m (Base t (Free (Base t) a))) -- ^ coalgebra
       -> a -> m t
-futuM psi = anaM f . Pure
+futuM psi = h
+  where h = (return . embed) <=< mapM f <=< psi
+        f = cataM $ \case
+          Fr.Pure  a -> h a
+          Fr.Free fb -> return (embed fb)
+
+-- | futumorphism on anamorphism variant
+futuM' :: (Monad m, Traversable (Base t), Corecursive t)
+      => (a -> m (Base t (Free (Base t) a))) -- ^ coalgebra
+      -> a -> m t
+futuM' psi = anaM f . Pure
   where f (Pure  a) = psi a
         f (Free fb) = return fb
 
