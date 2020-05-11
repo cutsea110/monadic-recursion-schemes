@@ -51,7 +51,7 @@ apoM :: (Monad m, Traversable (Base t), Corecursive t)
 apoM psi = h
   where h = (return . embed) <=< mapM (either return h) <=< psi
 
--- | histomorphism on recursion variant
+-- | histomorphism on anamorphism variant
 histoM :: (Monad m, Traversable (Base t), Recursive t)
        => (Base t (Cofree (Base t) a) -> m a) -- ^ algebra
        -> t -> m a
@@ -66,7 +66,7 @@ histoM' :: (Monad m, Traversable (Base t), Recursive t)
 histoM' phi = return . extract <=< cataM f
   where f = return . uncurry (:<) <=< (liftM2 (,) <$> phi <*> return)
 
--- | futumorphism on recursion variant
+-- | futumorphism on catamorphism variant
 futuM :: (Monad m, Traversable (Base t), Corecursive t)
       => (a -> m (Base t (Free (Base t) a))) -- ^ coalgebra
       -> a -> m t
