@@ -5,8 +5,8 @@ cabal-version:       2.4
 
 name:                monadic-recursion-schemes
 version:             0.1.0.0
-synopsis:            Recursion schemes for Monadic version.
--- description:
+synopsis:            Recursion Schemes for Monadic version.
+description:         Yet another recursion schemes for monadic style, depends on recursion-schemes.
 homepage:            https://github.com/cutsea110/monadic-recursion-schemes.git
 -- bug-reports:
 license:             BSD-3-Clause
