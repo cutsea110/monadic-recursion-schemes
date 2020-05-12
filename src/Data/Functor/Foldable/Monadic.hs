@@ -13,6 +13,7 @@ module Data.Functor.Foldable.Monadic
   , histoM', futuM'
   , zygoM, cozygoM
   , hyloM, metaM
+  , chronoM
   ) where
 
 import           Control.Comonad              (Comonad (..))
@@ -133,3 +134,10 @@ metaM' :: (Monad m, Corecursive c, Traversable (Base c), Traversable (Base t), R
        -> (a -> m (Base c a)) -- ^ coalgebra
        -> t -> m c
 metaM' phi psi = anaM psi <=< cataM phi
+
+chronoM :: (Monad m, Traversable t, Corecursive c)
+        => (t (Base c c) -> m (Base c c))
+        -> (Free f a -> m (t (Free f a)))
+        -> a -> m c
+chronoM phi psi = (return . embed) <=< hyloM phi psi . Pure
+
