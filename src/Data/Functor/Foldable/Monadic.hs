@@ -1,10 +1,11 @@
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE DeriveFoldable #-}
 {-# LANGUAGE DeriveTraversable #-}
-{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE GADTs #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 module Data.Functor.Foldable.Monadic
   ( cataM, anaM
   , paraM, apoM
@@ -110,6 +111,14 @@ hyloM :: (Monad m, Traversable t)
 hyloM phi psi = h
   where h = phi <=< mapM h <=< psi
 
+-- FIXME: I couldn't compile with this type signature.
+-- | hylomorphism on combination variant of ana to cata
+-- hyloM' :: (Monad m, Traversable (Base t), Recursive t, Corecursive t)
+--        => (Base t b -> m b)   -- ^ algebra
+--        -> (a -> m (Base t a)) -- ^ coalgebra
+--        -> a -> m b
+hyloM' phi psi = cataM phi <=< anaM psi
+
 -- | metamorphism on recursive variant
 metaM :: (Monad m, Traversable (Base t), Recursive s, Corecursive t, Base s ~ Base t)
       => (Base t t -> m t)
@@ -117,3 +126,10 @@ metaM :: (Monad m, Traversable (Base t), Recursive s, Corecursive t, Base s ~ Ba
       -> s -> m t
 metaM phi psi = h
   where h = (return . embed) <=< mapM h . project
+
+-- | metamorphism on combination variant of cata to ana
+metaM' :: (Monad m, Corecursive c, Traversable (Base c), Traversable (Base t), Recursive t)
+       => (Base t a -> m a)   -- ^ algebra
+       -> (a -> m (Base c a)) -- ^ coalgebra
+       -> t -> m c
+metaM' phi psi = anaM psi <=< cataM phi
