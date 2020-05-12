@@ -13,7 +13,7 @@ module Data.Functor.Foldable.Monadic
   , histoM', futuM'
   , zygoM, cozygoM
   , hyloM, metaM
-  , chronoM
+  , chronoM', cochronoM'
   ) where
 
 import           Control.Comonad              (Comonad (..))
@@ -135,9 +135,16 @@ metaM' :: (Monad m, Corecursive c, Traversable (Base c), Traversable (Base t), R
        -> t -> m c
 metaM' phi psi = anaM psi <=< cataM phi
 
-chronoM :: (Monad m, Traversable t, Corecursive c)
-        => (t (Base c c) -> m (Base c c))
-        -> (Free f a -> m (t (Free f a)))
-        -> a -> m c
-chronoM phi psi = (return . embed) <=< hyloM phi psi . Pure
+-- FIXME: I couldn't compile with this type signature.
+-- | chronomorphism on combination variant of futu to hist
+-- chronoM' :: (Monad m, Traversable (Base t), Recursive t, Corecursive t)
+--          => (Base t (Cofree (Base t) c) -> m c) -- ^ algebra
+--          -> (a -> m (Base t (Free (Base t) a))) -- ^ coalgebra
+--          -> a -> m c
+chronoM' phi psi = histoM phi <=< futuM psi
 
+cochronoM' :: (Monad m, Corecursive c, Traversable (Base c), Traversable (Base t), Recursive t)
+           => (Base t (Cofree (Base t) a) -> m a)
+           -> (a -> m (Base c (Free (Base c) a)))
+           -> t -> m c
+cochronoM' phi psi = futuM psi <=< histoM phi
