@@ -27,3 +27,8 @@
 ## 0.1.3.3 -- 2020-05-13
 
 * added comment
+
+## 0.1.3.4 -- 2020-05-13
+
+* add type signature for hyloM' and chronoM.
+
