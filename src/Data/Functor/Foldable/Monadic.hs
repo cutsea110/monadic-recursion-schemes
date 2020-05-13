@@ -43,7 +43,7 @@ anaM :: (Monad m, Traversable (Base t), Corecursive t)
      => (a -> m (Base t a)) -- ^ coalgebra
      -> a -> m t
 anaM psi = h
-  where h = (return . embed) <=< mapM h <=< psi
+  where h = return . embed <=< mapM h <=< psi
 
 -- | paramorphism
 paraM :: (Monad m, Traversable (Base t), Recursive t)
@@ -57,7 +57,7 @@ apoM :: (Monad m, Traversable (Base t), Corecursive t)
      => (a -> m (Base t (Either t a))) -- ^ coalgebra
      -> a -> m t
 apoM psi = h
-  where h = (return . embed) <=< mapM (either return h) <=< psi
+  where h = return . embed <=< mapM (either return h) <=< psi
 
 -- | histomorphism on anamorphism variant
 histoM :: (Monad m, Traversable (Base t), Recursive t)
@@ -65,7 +65,7 @@ histoM :: (Monad m, Traversable (Base t), Recursive t)
        -> t -> m a
 histoM phi = h
   where h = phi <=< mapM f . project
-        f = anaM (liftM2 (Cf.:<) <$> h <*> (return . project))
+        f = anaM (liftM2 (Cf.:<) <$> h <*> return . project)
 
 -- | histomorphism on catamorphism variant
 histoM' :: (Monad m, Traversable (Base t), Recursive t)
@@ -79,7 +79,7 @@ futuM :: (Monad m, Traversable (Base t), Corecursive t)
       => (a -> m (Base t (Free (Base t) a))) -- ^ coalgebra
       -> a -> m t
 futuM psi = h
-  where h = (return . embed) <=< mapM f <=< psi
+  where h = return . embed <=< mapM f <=< psi
         f = cataM $ \case
           Fr.Pure  a -> h a
           Fr.Free fb -> return (embed fb)
@@ -129,7 +129,7 @@ metaM :: (Monad m, Traversable (Base t), Recursive s, Corecursive t, Base s ~ Ba
       -> (s -> m (Base s s)) -- ^ coalgebra
       -> s -> m t
 metaM phi psi = h
-  where h = (return . embed) <=< mapM h . project
+  where h = return . embed <=< mapM h . project
 
 -- | metamorphism on combination variant of cata to ana
 metaM' :: (Monad m, Corecursive c, Traversable (Base c), Traversable (Base t), Recursive t)
