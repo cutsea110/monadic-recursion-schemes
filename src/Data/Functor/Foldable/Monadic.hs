@@ -164,11 +164,18 @@ cochronoM :: (Monad m, Corecursive c, Traversable (Base c), Traversable (Base t)
 cochronoM phi psi = futuM psi <=< histoM phi
 
 -- | dynamorphism on recursive variant over chronomorphism
-dynaM' :: (Monad m, Traversable (Base t), Recursive t, Corecursive t)
-       => (Base t (Cofree (Base t) b) -> m b) -- ^ algebra
+dynaM :: (Monad m, Traversable (Base t), Recursive t, Corecursive t)
+      => (Base t (Cofree (Base t) b) -> m b) -- ^ algebra
+      -> (a -> m (Base t a))                 -- ^ coalgebra
+      -> a -> m b
+dynaM phi psi = chronoM' phi (return . fmap Pure <=< psi)
+
+-- | dynamorphism on combination variant of ana to histo
+dynaM' :: forall m t a c. (Monad m, Traversable (Base t), Recursive t, Corecursive t)
+       => (Base t (Cofree (Base t) c) -> m c) -- ^ algebra
        -> (a -> m (Base t a))                 -- ^ coalgebra
-       -> a -> m b
-dynaM' phi psi = chronoM' phi (return . fmap Pure <=< psi)
+       -> a -> m c
+dynaM' phi psi = (histoM phi :: t -> m c) <=< (anaM psi :: a -> m t)
 
 -- | dynamorphism on recursive variant over hylomorphism
 dynaM'' :: (Monad m, Traversable t)
@@ -178,22 +185,15 @@ dynaM'' :: (Monad m, Traversable t)
 dynaM'' phi psi = return . extract <=< hyloM f psi
   where f = liftM2 (:<) <$> phi <*> return
 
--- | dynamorphism on combination variant of ana to histo
-dynaM :: forall m t a c. (Monad m, Traversable (Base t), Recursive t, Corecursive t)
-      => (Base t (Cofree (Base t) c) -> m c) -- ^ algebra
-      -> (a -> m (Base t a))                 -- ^ coalgebra
-      -> a -> m c
-dynaM phi psi = (histoM phi :: t -> m c) <=< (anaM psi :: a -> m t)
-
-codynaM' :: (Monad m, Traversable t)
-         => (t b -> m b)            -- ^ algebra
-         -> (a -> m (t (Free t a))) -- ^ coalgebra
-         -> a -> m b
-codynaM' phi psi = chronoM' (phi . fmap extract) psi
+codynaM :: (Monad m, Traversable t)
+        => (t b -> m b)            -- ^ algebra
+        -> (a -> m (t (Free t a))) -- ^ coalgebra
+        -> a -> m b
+codynaM phi psi = chronoM' (phi . fmap extract) psi
 
 -- | codynamorphism on combination variant of histo to ana
-codynaM :: (Monad m, Corecursive c, Traversable (Base c), Traversable (Base t), Recursive t)
-        => (Base t (Cofree (Base t) a) -> m a) -- ^ algebra
-        -> (a -> m (Base c a))                 -- ^ coalgebra
-        -> t -> m c
-codynaM phi psi = anaM psi <=< histoM phi
+codynaM' :: (Monad m, Corecursive c, Traversable (Base c), Traversable (Base t), Recursive t)
+         => (Base t (Cofree (Base t) a) -> m a) -- ^ algebra
+         -> (a -> m (Base c a))                 -- ^ coalgebra
+         -> t -> m c
+codynaM' phi psi = anaM psi <=< histoM phi
