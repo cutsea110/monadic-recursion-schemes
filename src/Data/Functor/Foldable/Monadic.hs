@@ -185,6 +185,7 @@ dynaM'' :: (Monad m, Traversable t)
 dynaM'' phi psi = return . extract <=< hyloM f psi
   where f = liftM2 (:<) <$> phi <*> return
 
+-- | codynamorphism on recursive variant over chronomorphism
 codynaM :: (Monad m, Traversable t)
         => (t b -> m b)            -- ^ algebra
         -> (a -> m (t (Free t a))) -- ^ coalgebra
@@ -198,6 +199,7 @@ codynaM' :: (Monad m, Corecursive c, Traversable (Base c), Traversable (Base t),
          -> t -> m c
 codynaM' phi psi = anaM psi <=< histoM phi
 
+-- | codynamorphism on recursive variant over hylomorphism
 codynaM'' :: (Monad m, Traversable t)
           => (t b -> m b)            -- ^ algebra
           -> (a -> m (t (Free t a))) -- ^ coalgebra
