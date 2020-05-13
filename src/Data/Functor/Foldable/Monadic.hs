@@ -116,10 +116,6 @@ hyloM phi psi = h
 
 -- FIXME: I couldn't compile with this type signature.
 -- | hylomorphism on combination variant of ana to cata
--- hyloM' :: (Monad m, Traversable (Base t), Recursive t, Corecursive t)
---        => (Base t b -> m b)   -- ^ algebra
---        -> (a -> m (Base t a)) -- ^ coalgebra
---        -> a -> m b
 hyloM' phi psi = cataM phi <=< anaM psi
 
 -- | metamorphism on recursive variant
@@ -149,10 +145,6 @@ chronoM' phi psi = return . extract <=< hyloM f g . Pure
 
 -- FIXME: I couldn't compile with this type signature.
 -- | chronomorphism on combination variant of futu to hist
--- chronoM' :: (Monad m, Traversable (Base t), Recursive t, Corecursive t)
---          => (Base t (Cofree (Base t) c) -> m c) -- ^ algebra
---          -> (a -> m (Base t (Free (Base t) a))) -- ^ coalgebra
---          -> a -> m c
 chronoM phi psi = histoM phi <=< futuM psi
 
 cochronoM :: (Monad m, Corecursive c, Traversable (Base c), Traversable (Base t), Recursive t)
