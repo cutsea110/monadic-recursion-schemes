@@ -14,7 +14,7 @@ module Data.Functor.Foldable.Monadic
   , zygoM, cozygoM
   , hyloM, metaM
   , chronoM, cochronoM
-  , chronoM', cochronoM'
+  , chronoM', -- cochronoM'
   ) where
 
 import           Control.Comonad              (Comonad (..))
@@ -137,11 +137,11 @@ metaM' :: (Monad m, Corecursive c, Traversable (Base c), Traversable (Base t), R
 metaM' phi psi = anaM psi <=< cataM phi
 
 -- | chronomorphism on recursive variant over hylomorphism
-chronoM :: (Monad m, Traversable t)
-        => (t (Cofree t b) -> m b) -- ^ algebra
-        -> (a -> m (t (Free t a))) -- ^ coalgebra
-        -> a -> m b
-chronoM phi psi = return . extract <=< hyloM f g . Pure
+chronoM' :: (Monad m, Traversable t)
+         => (t (Cofree t b) -> m b) -- ^ algebra
+         -> (a -> m (t (Free t a))) -- ^ coalgebra
+         -> a -> m b
+chronoM' phi psi = return . extract <=< hyloM f g . Pure
   where f = liftM2 (:<) <$> phi <*> return
         g (Pure  a) = psi a
         g (Free fb) = return fb
@@ -152,12 +152,10 @@ chronoM phi psi = return . extract <=< hyloM f g . Pure
 --          => (Base t (Cofree (Base t) c) -> m c) -- ^ algebra
 --          -> (a -> m (Base t (Free (Base t) a))) -- ^ coalgebra
 --          -> a -> m c
-chronoM' phi psi = histoM phi <=< futuM psi
+chronoM phi psi = histoM phi <=< futuM psi
 
-cochronoM = undefined
-
-cochronoM' :: (Monad m, Corecursive c, Traversable (Base c), Traversable (Base t), Recursive t)
-           => (Base t (Cofree (Base t) a) -> m a)
-           -> (a -> m (Base c (Free (Base c) a)))
-           -> t -> m c
-cochronoM' phi psi = futuM psi <=< histoM phi
+cochronoM :: (Monad m, Corecursive c, Traversable (Base c), Traversable (Base t), Recursive t)
+          => (Base t (Cofree (Base t) a) -> m a)
+          -> (a -> m (Base c (Free (Base c) a)))
+          -> t -> m c
+cochronoM phi psi = futuM psi <=< histoM phi
