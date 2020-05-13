@@ -68,7 +68,7 @@ histoM' :: (Monad m, Traversable (Base t), Recursive t)
         => (Base t (Cofree (Base t) a) -> m a)
         -> t -> m a
 histoM' phi = return . extract <=< cataM f
-  where f = return . uncurry (:<) <=< (liftM2 (,) <$> phi <*> return)
+  where f = liftM2 (:<) <$> phi <*> return
 
 -- | futumorphism on catamorphism variant
 futuM :: (Monad m, Traversable (Base t), Corecursive t)
@@ -136,7 +136,7 @@ metaM' :: (Monad m, Corecursive c, Traversable (Base c), Traversable (Base t), R
 metaM' phi psi = anaM psi <=< cataM phi
 
 chronoM phi psi = return . extract <=< hyloM f g . Pure
-  where f = return . uncurry (:<) <=< (liftM2 (,) <$> phi <*> return)
+  where f = liftM2 (:<) <$> phi <*> return
         g (Pure  a) = psi a
         g (Free fb) = return fb
 
