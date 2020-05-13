@@ -67,7 +67,7 @@ histoM phi = h
 
 -- | histomorphism on catamorphism variant
 histoM' :: (Monad m, Traversable (Base t), Recursive t)
-        => (Base t (Cofree (Base t) a) -> m a)
+        => (Base t (Cofree (Base t) a) -> m a) -- ^ algebra
         -> t -> m a
 histoM' phi = return . extract <=< cataM f
   where f = liftM2 (:<) <$> phi <*> return
@@ -120,8 +120,8 @@ hyloM' phi psi = cataM phi <=< anaM psi
 
 -- | metamorphism on recursive variant
 metaM :: (Monad m, Traversable (Base t), Recursive s, Corecursive t, Base s ~ Base t)
-      => (Base t t -> m t)
-      -> (s -> m (Base s s))
+      => (Base t t -> m t)   -- ^ algebra
+      -> (s -> m (Base s s)) -- ^ coalgebra
       -> s -> m t
 metaM phi psi = h
   where h = (return . embed) <=< mapM h . project
