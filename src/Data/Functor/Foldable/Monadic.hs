@@ -155,6 +155,7 @@ chronoM :: forall m t a b. (Monad m, Traversable (Base t), Recursive t, Corecurs
         -> a -> m b
 chronoM phi psi = (histoM phi :: t -> m b) <=< (futuM psi :: a -> m t)
 
+-- | cochronomorphism on combination variant of histo to futu
 cochronoM :: (Monad m, Corecursive c, Traversable (Base c), Traversable (Base t), Recursive t)
           => (Base t (Cofree (Base t) a) -> m a) -- ^ algebra
           -> (a -> m (Base c (Free (Base c) a))) -- ^ coalgebra
