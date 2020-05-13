@@ -161,13 +161,13 @@ cochronoM :: (Monad m, Corecursive c, Traversable (Base c), Traversable (Base t)
           -> (a -> m (Base c (Free (Base c) a))) -- ^ coalgebra
           -> t -> m c
 cochronoM phi psi = futuM psi <=< histoM phi
-{-
-dynaM' :: forall m t a b. (Monad m, Traversable (Base t), Recursive t, Corecursive t)
+
+-- | dynamorphism on recursive variant over chronomorphism
+dynaM' :: (Monad m, Traversable (Base t), Recursive t, Corecursive t)
        => (Base t (Cofree (Base t) b) -> m b)
        -> (a -> m (Base t a))
        -> a -> m b
---}
-dynaM' phi psi = chronoM phi (return . fmap Pure <=< psi)
+dynaM' phi psi = chronoM' phi (return . fmap Pure <=< psi)
 
 -- | dynamorphism on recursive variant over hylomorphism
 dynaM'' :: (Monad m, Traversable t)
