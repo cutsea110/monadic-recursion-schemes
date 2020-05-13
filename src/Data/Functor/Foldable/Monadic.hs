@@ -135,6 +135,11 @@ metaM' :: (Monad m, Corecursive c, Traversable (Base c), Traversable (Base t), R
        -> t -> m c
 metaM' phi psi = anaM psi <=< cataM phi
 
+chronoM phi psi = return . extract <=< hyloM f g . Pure
+  where f = return . uncurry (:<) <=< (liftM2 (,) <$> phi <*> return)
+        g (Pure  a) = psi a
+        g (Free fb) = return fb
+
 -- FIXME: I couldn't compile with this type signature.
 -- | chronomorphism on combination variant of futu to hist
 -- chronoM' :: (Monad m, Traversable (Base t), Recursive t, Corecursive t)
