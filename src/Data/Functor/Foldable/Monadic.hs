@@ -18,7 +18,7 @@ module Data.Functor.Foldable.Monadic
   , chronoM' -- cochronoM'
   , dynaM, codynaM
   , dynaM', codynaM'
-  , dynaM'', -- codynaM''
+  , dynaM'', codynaM''
   ) where
 
 import           Control.Comonad              (Comonad (..))
@@ -197,3 +197,11 @@ codynaM' :: (Monad m, Corecursive c, Traversable (Base c), Traversable (Base t),
          -> (a -> m (Base c a))                 -- ^ coalgebra
          -> t -> m c
 codynaM' phi psi = anaM psi <=< histoM phi
+
+codynaM'' :: (Monad m, Traversable t)
+          => (t b -> m b)            -- ^ algebra
+          -> (a -> m (t (Free t a))) -- ^ coalgebra
+          -> a -> m b
+codynaM'' phi psi = hyloM phi g . Pure
+  where g (Pure  a) = psi a
+        g (Free fb) = return fb
