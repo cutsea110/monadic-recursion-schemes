@@ -13,6 +13,7 @@ module Data.Functor.Foldable.Monadic
   , histoM', futuM'
   , zygoM, cozygoM
   , hyloM, metaM
+  , chronoM, cochronoM
   , chronoM', cochronoM'
   ) where
 
@@ -135,6 +136,11 @@ metaM' :: (Monad m, Corecursive c, Traversable (Base c), Traversable (Base t), R
        -> t -> m c
 metaM' phi psi = anaM psi <=< cataM phi
 
+-- | chronomorphism on recursive variant over hylomorphism
+chronoM :: (Monad m, Traversable t)
+        => (t (Cofree t b) -> m b) -- ^ algebra
+        -> (a -> m (t (Free t a))) -- ^ coalgebra
+        -> a -> m b
 chronoM phi psi = return . extract <=< hyloM f g . Pure
   where f = liftM2 (:<) <$> phi <*> return
         g (Pure  a) = psi a
@@ -147,6 +153,8 @@ chronoM phi psi = return . extract <=< hyloM f g . Pure
 --          -> (a -> m (Base t (Free (Base t) a))) -- ^ coalgebra
 --          -> a -> m c
 chronoM' phi psi = histoM phi <=< futuM psi
+
+cochronoM = undefined
 
 cochronoM' :: (Monad m, Corecursive c, Traversable (Base c), Traversable (Base t), Recursive t)
            => (Base t (Cofree (Base t) a) -> m a)
