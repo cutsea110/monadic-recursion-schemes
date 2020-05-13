@@ -19,3 +19,8 @@
 ## 0.1.3.1 -- 2020-05-13
 
 * added comment
+
+## 0.1.3.2 -- 2020-05-13
+
+* export the variants for hyloM and metaM.
+
