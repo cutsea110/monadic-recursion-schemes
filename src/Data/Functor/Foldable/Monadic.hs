@@ -6,7 +6,6 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE TypeFamilyDependencies #-}
 module Data.Functor.Foldable.Monadic
   ( cataM, anaM
   , paraM, apoM
