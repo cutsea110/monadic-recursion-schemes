@@ -6,6 +6,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TypeFamilyDependencies #-}
 module Data.Functor.Foldable.Monadic
   ( cataM, anaM
   , paraM, apoM
@@ -114,9 +115,12 @@ hyloM :: (Monad m, Traversable t)
 hyloM phi psi = h
   where h = phi <=< mapM h <=< psi
 
--- FIXME: I couldn't compile with this type signature.
 -- | hylomorphism on combination variant of ana to cata
-hyloM' phi psi = cataM phi <=< anaM psi
+hyloM' :: forall m t a c. (Monad m, Traversable (Base t), Recursive t, Corecursive t)
+       => (Base t c -> m c)
+       -> (a -> m (Base t a))
+       -> a -> m c
+hyloM' phi psi = (cataM phi :: t -> m c) <=< (anaM psi :: a -> m t)
 
 -- | metamorphism on recursive variant
 metaM :: (Monad m, Traversable (Base t), Recursive s, Corecursive t, Base s ~ Base t)
