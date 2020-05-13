@@ -17,6 +17,7 @@ module Data.Functor.Foldable.Monadic
   , chronoM, cochronoM
   , chronoM' -- cochronoM'
   , dynaM, codynaM
+  , dynaM' -- codynaM'
   ) where
 
 import           Control.Comonad              (Comonad (..))
@@ -159,6 +160,14 @@ cochronoM :: (Monad m, Corecursive c, Traversable (Base c), Traversable (Base t)
           -> (a -> m (Base c (Free (Base c) a))) -- ^ coalgebra
           -> t -> m c
 cochronoM phi psi = futuM psi <=< histoM phi
+
+-- | dynamorphism on recursive variant over hylomorphism
+dynaM' :: (Monad m, Traversable t)
+       => (t (Cofree t c) -> m c) -- ^ algebra
+       -> (a -> m (t a))          -- ^ coalgebra
+       -> a -> m c
+dynaM' phi psi = return . extract <=< hyloM f psi
+  where f = liftM2 (:<) <$> phi <*> return
 
 -- | dynamorphism on combination variant of ana to histo
 dynaM :: forall m t a c. (Monad m, Traversable (Base t), Recursive t, Corecursive t)
