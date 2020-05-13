@@ -1,5 +1,8 @@
 # Revision history for monadic-recursion-schemes
 
+## 0.1.4.0 -- 2020-05-14
+
+* add dynaM, codynaM and dynaM' the recursive variant.
 
 ## 0.1.3.4 -- 2020-05-13
 
