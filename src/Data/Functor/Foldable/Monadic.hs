@@ -116,11 +116,11 @@ hyloM phi psi = h
   where h = phi <=< mapM h <=< psi
 
 -- | hylomorphism on combination variant of ana to cata
-hyloM' :: forall m t a c. (Monad m, Traversable (Base t), Recursive t, Corecursive t)
-       => (Base t c -> m c)
-       -> (a -> m (Base t a))
-       -> a -> m c
-hyloM' phi psi = (cataM phi :: t -> m c) <=< (anaM psi :: a -> m t)
+hyloM' :: forall m t a b. (Monad m, Traversable (Base t), Recursive t, Corecursive t)
+       => (Base t b -> m b)   -- ^ algebra
+       -> (a -> m (Base t a)) -- ^ coalgebra
+       -> a -> m b
+hyloM' phi psi = (cataM phi :: t -> m b) <=< (anaM psi :: a -> m t)
 
 -- | metamorphism on recursive variant
 metaM :: (Monad m, Traversable (Base t), Recursive s, Corecursive t, Base s ~ Base t)
@@ -147,9 +147,12 @@ chronoM' phi psi = return . extract <=< hyloM f g . Pure
         g (Pure  a) = psi a
         g (Free fb) = return fb
 
--- FIXME: I couldn't compile with this type signature.
 -- | chronomorphism on combination variant of futu to hist
-chronoM phi psi = histoM phi <=< futuM psi
+chronoM :: forall m t a b. (Monad m, Traversable (Base t), Recursive t, Corecursive t)
+        => (Base t (Cofree (Base t) b) -> m b) -- ^ algebra
+        -> (a -> m (Base t (Free (Base t) a))) -- ^ coalgebra
+        -> a -> m b
+chronoM phi psi = (histoM phi :: t -> m b) <=< (futuM psi :: a -> m t)
 
 cochronoM :: (Monad m, Corecursive c, Traversable (Base c), Traversable (Base t), Recursive t)
           => (Base t (Cofree (Base t) a) -> m a) -- ^ algebra
