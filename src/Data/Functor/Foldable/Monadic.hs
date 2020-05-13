@@ -18,7 +18,7 @@ module Data.Functor.Foldable.Monadic
   , chronoM' -- cochronoM'
   , dynaM, codynaM
   , dynaM', codynaM'
-  , dynaM'', -- codynaM'
+  , dynaM'', -- codynaM''
   ) where
 
 import           Control.Comonad              (Comonad (..))
