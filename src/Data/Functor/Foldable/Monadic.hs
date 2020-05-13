@@ -13,6 +13,7 @@ module Data.Functor.Foldable.Monadic
   , histoM', futuM'
   , zygoM, cozygoM
   , hyloM, metaM
+  , hyloM', metaM'
   , chronoM, cochronoM
   , chronoM', -- cochronoM'
   ) where
