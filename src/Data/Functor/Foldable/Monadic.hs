@@ -155,7 +155,7 @@ chronoM' phi psi = return . extract <=< hyloM f g . Pure
 chronoM phi psi = histoM phi <=< futuM psi
 
 cochronoM :: (Monad m, Corecursive c, Traversable (Base c), Traversable (Base t), Recursive t)
-          => (Base t (Cofree (Base t) a) -> m a)
-          -> (a -> m (Base c (Free (Base c) a)))
+          => (Base t (Cofree (Base t) a) -> m a) -- ^ algebra
+          -> (a -> m (Base c (Free (Base c) a))) -- ^ coalgebra
           -> t -> m c
 cochronoM phi psi = futuM psi <=< histoM phi
