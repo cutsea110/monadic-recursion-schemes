@@ -15,3 +15,7 @@
 ## 0.1.3.0 -- 2020-05-13
 
 * added chronoM, cochronoM and the variants.
+
+## 0.1.3.1 -- 2020-05-13
+
+* added comment
