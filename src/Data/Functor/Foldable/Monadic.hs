@@ -19,6 +19,7 @@ module Data.Functor.Foldable.Monadic
   , dynaM, codynaM
   , dynaM', codynaM'
   , dynaM'', codynaM''
+  , mutuM', comutuM'
   ) where
 
 import           Control.Comonad              (Comonad (..))
@@ -207,3 +208,18 @@ codynaM'' :: (Monad m, Traversable t)
 codynaM'' phi psi = hyloM phi g . Pure
   where g (Pure  a) = psi a
         g (Free fb) = return fb
+
+-- | mutumorphism on recursive variant over catamorphism
+mutuM' :: (Monad m, Traversable (Base t), Recursive t)
+       => (a -> b)          -- ^ project
+       -> (Base t a -> m a) -- ^ algebra
+       -> t -> m b
+
+-- | comutumorphism on recursive variant over anamorphism
+mutuM' f phi = return . f <=< cataM phi
+
+comutuM' :: (Monad m, Traversable (Base t), Corecursive t)
+         => (b -> a)            -- ^ embed
+         -> (a -> m (Base t a)) -- ^ coalgebra
+         -> b -> m t
+comutuM' f psi = anaM psi . f
