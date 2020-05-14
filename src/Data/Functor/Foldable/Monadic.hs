@@ -237,5 +237,3 @@ comutuM' :: (Monad m, Traversable (Base t), Corecursive t)
          -> (a -> m (Base t a)) -- ^ coalgebra
          -> b -> m t
 comutuM' f psi = anaM psi . f
-
-
