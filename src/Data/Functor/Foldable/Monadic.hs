@@ -21,6 +21,7 @@ module Data.Functor.Foldable.Monadic
   , dynaM'', codynaM''
   , mutuM, comutuM
   , mutuM', comutuM'
+  , preproM, postproM
   ) where
 
 import           Control.Comonad              (Comonad (..))
