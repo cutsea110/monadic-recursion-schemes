@@ -1,5 +1,9 @@
 # Revision history for monadic-recursion-schemes
 
+## 0.1.5.0 -- 2020-05-14
+
+* add mutuM and comutuM with the other variant, which has not the same type signature.
+
 ## 0.1.4.2 -- 2020-05-14
 
 * add comment.
