@@ -246,3 +246,12 @@ preproM :: (Monad m, Traversable (Base t), Recursive t, Corecursive t)
 preproM h phi = u
   where u = phi <=< mapM f . project
         f = u <=< cataM (return . embed <=< h)
+
+-- | postpromorphism
+postproM :: (Monad m, Traversable (Base t), Recursive t, Corecursive t)
+         => (Base t t -> m (Base t t)) -- ^ monadic natural transformation
+         -> (a -> m (Base t a))        -- ^ coalgebra
+         -> a -> m t
+postproM h psi = u
+  where u = return . embed <=< mapM f <=< psi
+        f = anaM (h . project) <=< u
