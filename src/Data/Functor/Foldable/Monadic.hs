@@ -237,3 +237,12 @@ comutuM' :: (Monad m, Traversable (Base t), Corecursive t)
          -> (a -> m (Base t a)) -- ^ coalgebra
          -> b -> m t
 comutuM' f psi = anaM psi . f
+
+-- | prepromorphism
+preproM :: (Monad m, Traversable (Base t), Recursive t, Corecursive t)
+        => (Base t t -> m (Base t t)) -- ^ monadic natural transformation
+        -> (Base t a -> m a)          -- ^ algebra
+        -> t -> m a
+preproM h phi = u
+  where u = phi <=< mapM f . project
+        f = u <=< cataM (return . embed <=< h)
