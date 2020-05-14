@@ -19,6 +19,7 @@ module Data.Functor.Foldable.Monadic
   , dynaM, codynaM
   , dynaM', codynaM'
   , dynaM'', codynaM''
+  , mutuM, comutuM
   , mutuM', comutuM'
   ) where
 
@@ -209,17 +210,32 @@ codynaM'' phi psi = hyloM phi g . Pure
   where g (Pure  a) = psi a
         g (Free fb) = return fb
 
+-- | mutumorphism on mutual recursive
+mutuM :: (Monad m, Traversable (Base t), Recursive t)
+      => (Base t (a, a) -> m a) -- ^ algebra
+      -> (Base t (a, a) -> m a) -- ^ algebra
+      -> t -> m a
+mutuM f g = g <=< mapM (liftM2 (,) <$> mutuM g f <*> mutuM f g) . project
+
 -- | mutumorphism on recursive variant over catamorphism
 mutuM' :: (Monad m, Traversable (Base t), Recursive t)
        => (a -> b)          -- ^ project
        -> (Base t a -> m a) -- ^ algebra
        -> t -> m b
-
--- | comutumorphism on recursive variant over anamorphism
 mutuM' f phi = return . f <=< cataM phi
 
+-- | comutumorphism on comutual recursive
+comutuM :: (Monad m, Traversable (Base t), Corecursive t)
+        => (a -> m (Base t (Either a a))) -- ^ coalgebra
+        -> (a -> m (Base t (Either a a))) -- ^ coalgebra
+        -> a -> m t
+comutuM f g = fmap embed . mapM (either (comutuM g f) (comutuM f g)) <=< g
+
+-- | comutumorphism on recursive variant over anamorphism
 comutuM' :: (Monad m, Traversable (Base t), Corecursive t)
          => (b -> a)            -- ^ embed
          -> (a -> m (Base t a)) -- ^ coalgebra
          -> b -> m t
 comutuM' f psi = anaM psi . f
+
+
