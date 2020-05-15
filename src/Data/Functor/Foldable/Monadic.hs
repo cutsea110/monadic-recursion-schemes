@@ -260,3 +260,10 @@ postproM :: (Monad m, Traversable (Base t), Recursive t, Corecursive t)
 postproM h psi = u
   where u = return . embed <=< mapM f <=< psi
         f = anaM (h . project) <=< u
+
+-- | cascade (a.k.a supermap)
+cascadeM :: (Monad m, Corecursive (f a), Traversable (Base (f a)), Traversable f, Recursive (f a))
+         => (a -> m a) -- ^ operator
+         -> f a -> m (f a)
+cascadeM f = u
+  where u = return . embed <=< mapM u <=< mapM (mapM f) . project
