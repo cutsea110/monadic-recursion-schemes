@@ -1,5 +1,9 @@
 # Revision history for monadic-recursion-schemes
 
+## 0.1.7.0 -- 2020-05-15
+
+* refine mutuM and comutuM. These have correct type signature.
+
 ## 0.1.6.1 -- 2020-05-15
 
 * bugfix: export preproM and postproM.
