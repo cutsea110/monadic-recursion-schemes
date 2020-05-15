@@ -213,10 +213,12 @@ codynaM'' phi psi = hyloM phi g . Pure
 
 -- | mutumorphism on mutual recursive
 mutuM :: (Monad m, Traversable (Base t), Recursive t)
-      => (Base t (a, a) -> m a) -- ^ algebra
-      -> (Base t (a, a) -> m a) -- ^ algebra
-      -> t -> m a
-mutuM f g = g <=< mapM (liftM2 (,) <$> mutuM g f <*> mutuM f g) . project
+      => (Base t (a, b) -> m b) -- ^ algebra
+      -> (Base t (a, b) -> m a) -- ^ algebra
+      -> t -> m b
+mutuM g f = v g f
+  where u f g = f <=< mapM (liftM2 (,) <$> u f g <*> v g f) . project
+        v g f = g <=< mapM (liftM2 (,) <$> u f g <*> v g f) . project
 
 -- | mutumorphism on recursive variant over catamorphism
 mutuM' :: (Monad m, Traversable (Base t), Recursive t)
