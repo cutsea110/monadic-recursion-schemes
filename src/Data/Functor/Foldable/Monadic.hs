@@ -229,10 +229,12 @@ mutuM' f phi = return . f <=< cataM phi
 
 -- | comutumorphism on comutual recursive
 comutuM :: (Monad m, Traversable (Base t), Corecursive t)
-        => (a -> m (Base t (Either a a))) -- ^ coalgebra
-        -> (a -> m (Base t (Either a a))) -- ^ coalgebra
-        -> a -> m t
-comutuM f g = fmap embed . mapM (either (comutuM g f) (comutuM f g)) <=< g
+        => (b -> m (Base t (Either a b))) -- ^ coalgebra
+        -> (a -> m (Base t (Either a b))) -- ^ coalgebra
+        -> b -> m t
+comutuM g f = v g f
+  where u f g = fmap embed . mapM (either (u f g) (v g f)) <=< f
+        v g f = fmap embed . mapM (either (u f g) (v g f)) <=< g
 
 -- | comutumorphism on recursive variant over anamorphism
 comutuM' :: (Monad m, Traversable (Base t), Corecursive t)
