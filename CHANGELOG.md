@@ -1,5 +1,9 @@
 # Revision history for monadic-recursion-schemes
 
+## 0.1.8.0 -- 2020-05-16
+
+* add cascadeM (a.k.a. supermap).
+
 ## 0.1.7.0 -- 2020-05-15
 
 * refine mutuM and comutuM. These have correct type signature.
