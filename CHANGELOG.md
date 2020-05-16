@@ -1,5 +1,9 @@
 # Revision history for monadic-recursion-schemes
 
+## 0.1.9.0 -- 2020-05-16
+
+* add iterateM (as dual of cascadeM)
+
 ## 0.1.8.0 -- 2020-05-16
 
 * add cascadeM (a.k.a. supermap).
