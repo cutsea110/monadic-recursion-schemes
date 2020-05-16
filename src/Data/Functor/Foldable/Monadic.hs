@@ -264,13 +264,14 @@ postproM h psi = u
 
 -- | cascade (a.k.a supermap)
 cascadeM :: (Monad m, Corecursive (f a), Traversable (Base (f a)), Traversable f, Recursive (f a))
-         => (a -> m a) -- ^ operator
+         => (a -> m a) -- ^ pre-operator
          -> f a -> m (f a)
 cascadeM f = u
   where u = return . embed <=< mapM u <=< mapM (mapM f) . project
 
+-- | iterate
 iterateM :: (Monad m, Corecursive (f a), Traversable (Base (f a)), Traversable f, Recursive (f a))
-         => (a -> m a)
+         => (a -> m a) -- ^ post-operator
          -> f a -> m (f a)
 iterateM f = u
   where u = return . embed <=< mapM (mapM f) <=< mapM u . project
