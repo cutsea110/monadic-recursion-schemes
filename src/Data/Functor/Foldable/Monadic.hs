@@ -22,7 +22,7 @@ module Data.Functor.Foldable.Monadic
   , mutuM, comutuM
   , mutuM', comutuM'
   , preproM, postproM
-  , cascadeM
+  , cascadeM, iterateM
   ) where
 
 import           Control.Comonad              (Comonad (..))
@@ -268,3 +268,9 @@ cascadeM :: (Monad m, Corecursive (f a), Traversable (Base (f a)), Traversable f
          -> f a -> m (f a)
 cascadeM f = u
   where u = return . embed <=< mapM u <=< mapM (mapM f) . project
+
+iterateM :: (Monad m, Corecursive (f a), Traversable (Base (f a)), Traversable f, Recursive (f a))
+         => (a -> m a)
+         -> f a -> m (f a)
+iterateM f = u
+  where u = return . embed <=< mapM (mapM f) <=< mapM u . project
