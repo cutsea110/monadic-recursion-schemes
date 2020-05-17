@@ -41,9 +41,7 @@ import qualified Control.Comonad.Trans.Cofree as Cf (CofreeF (..))
 import           Control.Monad                ((<=<), liftM2)
 import           Control.Monad.Free           (Free (..))
 import qualified Control.Monad.Trans.Free     as Fr (FreeF (..))
-import           Control.Monad.Trans.Class    (lift)
-import           Control.Monad.Trans.Reader   (ReaderT, ask, runReaderT)
-import           Data.Functor.Foldable        (Recursive (..), Corecursive (..), Base, Fix (..))
+import           Data.Functor.Foldable        (Recursive (..), Corecursive (..), Base)
 
 -- | catamorphism
 cataM :: (Monad m, Traversable (Base t), Recursive t)
@@ -142,7 +140,7 @@ metaM :: (Monad m, Traversable (Base t), Recursive s, Corecursive t, Base s ~ Ba
       => (Base t t -> m t)   -- ^ algebra
       -> (s -> m (Base s s)) -- ^ coalgebra
       -> s -> m t
-metaM phi psi = h
+metaM _phi _psi = h
   where h = return . embed <=< mapM h . project
 
 -- | metamorphism on combination variant of cata to ana
@@ -226,7 +224,7 @@ mutuM :: (Monad m, Traversable (Base t), Recursive t)
       => (Base t (a, b) -> m b) -- ^ algebra
       -> (Base t (a, b) -> m a) -- ^ algebra
       -> t -> m b
-mutuM g f = v g f
+mutuM q p = v q p
   where u f g = f <=< mapM (liftM2 (,) <$> u f g <*> v g f) . project
         v g f = g <=< mapM (liftM2 (,) <$> u f g <*> v g f) . project
 
@@ -242,7 +240,7 @@ comutuM :: (Monad m, Traversable (Base t), Corecursive t)
         => (b -> m (Base t (Either a b))) -- ^ coalgebra
         -> (a -> m (Base t (Either a b))) -- ^ coalgebra
         -> b -> m t
-comutuM g f = v g f
+comutuM q p = v q p
   where u f g = fmap embed . mapM (either (u f g) (v g f)) <=< f
         v g f = fmap embed . mapM (either (u f g) (v g f)) <=< g
 
