@@ -1,27 +1,37 @@
-{-# LANGUAGE GADTs #-}
-{-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE DeriveFunctor #-}
+{-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE DeriveFoldable #-}
+{-# LANGUAGE DeriveFunctor #-}
 {-# LANGUAGE DeriveTraversable #-}
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE AllowAmbiguousTypes #-}
+{-# LANGUAGE GADTs #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 module Data.Functor.Foldable.Monadic
-  ( cataM, anaM
-  , paraM, apoM
-  , histoM, futuM
-  , histoM', futuM'
-  , zygoM, cozygoM
+  ( -- * Folding
+    cataM
+  , preproM
+  , paraM
+  , zygoM
+  , histoM, histoM'
+  , dynaM, dynaM', dynaM''
+
+    -- * Unfolding
+  , anaM
+  , postproM
+  , apoM
+  , cozygoM
+  , futuM, futuM'
+  , codynaM, codynaM', codynaM''
+
+    -- * Refolding
   , hyloM, metaM
   , hyloM', metaM'
   , chronoM, cochronoM
   , chronoM' -- cochronoM'
-  , dynaM, codynaM
-  , dynaM', codynaM'
-  , dynaM'', codynaM''
+
+    -- * Others
   , mutuM, comutuM
   , mutuM', comutuM'
-  , preproM, postproM
   , cascadeM, iterateM
   ) where
 
@@ -34,7 +44,6 @@ import qualified Control.Monad.Trans.Free     as Fr (FreeF (..))
 import           Control.Monad.Trans.Class    (lift)
 import           Control.Monad.Trans.Reader   (ReaderT, ask, runReaderT)
 import           Data.Functor.Foldable        (Recursive (..), Corecursive (..), Base, Fix (..))
-
 
 -- | catamorphism
 cataM :: (Monad m, Traversable (Base t), Recursive t)
