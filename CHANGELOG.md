@@ -1,5 +1,9 @@
 # Revision history for monadic-recursion-schemes
 
+## 0.1.9.1 -- 2020-05-17
+
+* no warning at build time.
+
 ## 0.1.9.0 -- 2020-05-16
 
 * add iterateM (as dual of cascadeM)
