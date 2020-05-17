@@ -37,10 +37,10 @@ module Data.Functor.Foldable.Monadic
 
 import           Control.Comonad              (Comonad (..))
 import           Control.Comonad.Cofree       (Cofree (..))
-import qualified Control.Comonad.Trans.Cofree as Cf (CofreeF (..))
+import qualified Control.Comonad.Trans.Cofree as CF (CofreeF (..))
 import           Control.Monad                ((<=<), liftM2)
 import           Control.Monad.Free           (Free (..))
-import qualified Control.Monad.Trans.Free     as Fr (FreeF (..))
+import qualified Control.Monad.Trans.Free     as FR (FreeF (..))
 import           Data.Functor.Foldable        (Recursive (..), Corecursive (..), Base)
 
 -- | catamorphism
@@ -77,7 +77,7 @@ histoM :: (Monad m, Traversable (Base t), Recursive t)
        -> t -> m a
 histoM phi = h
   where h = phi <=< mapM f . project
-        f = anaM (liftM2 (Cf.:<) <$> h <*> return . project)
+        f = anaM (liftM2 (CF.:<) <$> h <*> return . project)
 
 -- | histomorphism on catamorphism variant
 histoM' :: (Monad m, Traversable (Base t), Recursive t)
@@ -93,8 +93,8 @@ futuM :: (Monad m, Traversable (Base t), Corecursive t)
 futuM psi = h
   where h = return . embed <=< mapM f <=< psi
         f = cataM $ \case
-          Fr.Pure  a -> h a
-          Fr.Free fb -> return (embed fb)
+          FR.Pure  a -> h a
+          FR.Free fb -> return (embed fb)
 
 -- | futumorphism on anamorphism variant
 futuM' :: (Monad m, Traversable (Base t), Corecursive t)
