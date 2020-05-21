@@ -287,9 +287,10 @@ iterateM f = u
   where u = return . embed <=< mapM (mapM f) <=< mapM u . project
 
 
-gcataM :: (Monad m, Comonad w, Traversable w, Traversable (Base t), Recursive t)
-       => (Base t (w (w a)) -> m (w (Base t (w a))))
-       -> (Base t (w a) -> m a)
+-- | generalized catamorphism
+gcataM :: (Monad m, Comonad w, Traversable w, Traversable (Base t), Recursive t, b ~ w a)
+       => (Base t (w b) -> m (w (Base t b))) -- ^ Distributive (Base t) w b
+       -> (Base t (w a) -> m a)              -- ^ algebra
        -> t -> m a
 gcataM k g = liftM extract . cataM phi
   where phi = mapM g <=< k <=< return . fmap duplicate
