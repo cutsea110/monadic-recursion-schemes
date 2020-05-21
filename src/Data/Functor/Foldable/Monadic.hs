@@ -30,7 +30,7 @@ module Data.Functor.Foldable.Monadic
   , chronoM' -- cochronoM'
 
     -- * Generalized Folding
-  , gcataM
+  , gcataM, gcataM'
 
     -- * Others
   , mutuM, comutuM
@@ -294,3 +294,11 @@ gcataM :: (Monad m, Comonad w, Traversable w, Traversable (Base t), Recursive t,
        -> t -> m a
 gcataM k g = liftM extract . cataM phi
   where phi = mapM g <=< k <=< return . fmap duplicate
+
+gcataM' :: (Monad m, Comonad w, Traversable w, Traversable (Base t), Recursive t, b ~ w a)
+        => (Base t (w b) -> m (w (Base t b))) -- ^ Distributive (Base t) w b
+        -> (Base t (w a) -> m a)              -- ^ algebra
+        -> t -> m a
+gcataM' k g = g <=< return . extract <=< c
+  where c = k <=< mapM u . project
+        u = return . duplicate <=< mapM g <=< c
