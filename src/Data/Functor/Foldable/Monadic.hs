@@ -29,6 +29,9 @@ module Data.Functor.Foldable.Monadic
   , chronoM, cochronoM
   , chronoM' -- cochronoM'
 
+    -- * Generalized Folding
+  , gcataM
+
     -- * Others
   , mutuM, comutuM
   , mutuM', comutuM'
@@ -38,7 +41,7 @@ module Data.Functor.Foldable.Monadic
 import           Control.Comonad              (Comonad (..))
 import           Control.Comonad.Cofree       (Cofree (..))
 import qualified Control.Comonad.Trans.Cofree as CF (CofreeF (..))
-import           Control.Monad                ((<=<), liftM2)
+import           Control.Monad                ((<=<), liftM, liftM2)
 import           Control.Monad.Free           (Free (..))
 import qualified Control.Monad.Trans.Free     as FR (FreeF (..))
 import           Data.Functor.Foldable        (Recursive (..), Corecursive (..), Base)
@@ -282,3 +285,11 @@ iterateM :: (Monad m, Corecursive (f a), Traversable (Base (f a)), Traversable f
          -> f a -> m (f a)
 iterateM f = u
   where u = return . embed <=< mapM (mapM f) <=< mapM u . project
+
+
+gcataM :: (Monad m, Comonad w, Traversable w, Traversable (Base t), Recursive t)
+       => (Base t (w (w a)) -> m (w (Base t (w a))))
+       -> (Base t (w a) -> m a)
+       -> t -> m a
+gcataM k g = liftM extract . cataM phi
+  where phi = mapM g <=< k <=< return . fmap duplicate
