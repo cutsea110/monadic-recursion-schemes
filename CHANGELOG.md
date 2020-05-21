@@ -1,8 +1,12 @@
 # Revision history for monadic-recursion-schemes
 
+## 0.1.11.0 -- 2020-05-21
+
+* add gcataM' which is gcataM variant correspond to recursion-schemes gcata.
+
 ## 0.1.10.0 -- 2020-05-21
 
-* add new member 'gcataM' which is a generalized morphism of catamorphism.
+* add new member gcataM which is a generalized morphism of catamorphism.
 
 ## 0.1.9.1 -- 2020-05-17
 
