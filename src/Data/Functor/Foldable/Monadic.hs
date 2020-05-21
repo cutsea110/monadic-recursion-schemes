@@ -295,6 +295,7 @@ gcataM :: (Monad m, Comonad w, Traversable w, Traversable (Base t), Recursive t,
 gcataM k g = liftM extract . cataM phi
   where phi = mapM g <=< k <=< return . fmap duplicate
 
+-- | generalized catamorphism variant
 gcataM' :: (Monad m, Comonad w, Traversable w, Traversable (Base t), Recursive t, b ~ w a)
         => (Base t (w b) -> m (w (Base t b))) -- ^ Distributive (Base t) w b
         -> (Base t (w a) -> m a)              -- ^ algebra
